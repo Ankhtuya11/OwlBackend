@@ -30,7 +30,7 @@ def registerUser(request):
     # Insert new user
     try:
         cursor.execute("INSERT INTO t_users (lname, fname, passw, enabled, email) VALUES (%s, %s, %s, %s, %s)",
-                       (lname, fname, passw, 0, email))
+                       (lname, fname, passw, 1, email))
         con.commit()  # Commit the transaction
         resp = sendResponse(200, f'{email} хэрэглэгчийг амжилттай бүртгэлээ', action)
         return HttpResponse(resp)

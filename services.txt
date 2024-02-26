@@ -1,0 +1,11 @@
+1. registerUser service jishee
+
+    POST --> http://127.0.0.1:8000/register/
+    {
+        "action":"registerUser",
+        "email":"shirednevbold@yahoo.com",
+        "lname":"Bold",
+        "fname":"Shirendev",
+        "passw":"asdfzxcv"
+    }
+
