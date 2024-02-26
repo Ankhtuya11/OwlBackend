@@ -9,3 +9,14 @@
         "passw":"asdfzxcv"
     }
 
+
+
+table uusgeh uyd:
+CREATE TABLE t_users(
+   uid SERIAL PRIMARY KEY,
+   lname VARCHAR NOT NULL,
+   fname VARCHAR NOT NULL,
+   email VARCHAR NOT NULL,
+   passw VARCHAR NOT NULL,
+   enabled int NOT NULL
+)
