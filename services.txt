@@ -20,3 +20,14 @@ CREATE TABLE t_users(
    passw VARCHAR NOT NULL,
    enabled int NOT NULL
 )
+
+2. bookadd
+
+POST --> http://127.0.0.1:8000/bookadd/
+
+{
+        "action":"bookadd",
+        "bname":"tuuj",
+        "author":"Dorj",
+        "btype":"zokhiol"
+    }
