@@ -73,3 +73,30 @@ def addMovie(request):
         resp = sendResponse(500, error_message, action)
         return HttpResponse(resp)
 
+@api_view(['POST', 'GET'])
+def bookadd(request):
+    action = 'bookadd'
+    jsons = json.loads(request.body)
+    bname = jsons.get('bname','nokey')
+    author = jsons.get('author','nokey')
+    btype = jsons.get('btype','nokey')
+   
+    con = connect()
+    cursor = con.cursor()
+
+    try: 
+        cursor.execute(f"SELECT * FROM t_book WHERE bname = '{bname}' AND author = '{author}' AND btype = '{btype}'")
+        existing_bookadd = cursor.fetchone()
+        if existing_bookadd:
+            resp = sendResponse(400, f"{bname} ном бүртгэгдсэн байна", action)
+        else:
+            cursor.execute(f"""INSERT INTO t_book(bname, author, btype) VALUES('{bname}', '{author}', '{btype}')""")
+            con.commit()
+            resp= sendResponse(200, f"{bname} номыг бүртгэлээ", action)
+
+        return HttpResponse(resp)
+    except Exception as e:
+        # Handle database errors
+        error_message = "Database error: " + str(e)
+        resp = sendResponse(500, error_message, action)
+        return HttpResponse(resp)

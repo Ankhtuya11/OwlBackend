@@ -20,4 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('register/', registerUser),
     path('addmovie/', addMovie),
+    path('bookadd/', bookadd)
 ]
