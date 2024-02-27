@@ -18,5 +18,6 @@ from django.urls import path
 from backendApp.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('register/', registerUser)
+    path('register/', registerUser),
+    path('addmovie/', addMovie),
 ]
