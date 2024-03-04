@@ -147,13 +147,18 @@ def sendResponse(resultCode, resultMessage, action):
     resp["regdate"] = now.strftime("%Y/%m/%d %H:%M:%S")
     return json.dumps(resp)
 
-
+#dbconnection
 def connect():
     con = psycopg2.connect(
         dbname='qrOwl',
         user='userowl',
         password='Owl1234@',
         host='192.168.0.15',
+        #host='59.153.86.254',
         port='5938',
     )
     return con
+#connect --> function maani duusaj vnaaa ard iregdee
+def disconnect(con):
+    con.close()
+#disconnect

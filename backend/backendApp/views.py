@@ -3,6 +3,7 @@ from backend.settings import *
 import json
 from rest_framework.decorators import api_view
 from django.http import HttpResponse
+from datetime import date
 # Create your views here.
 
 
@@ -13,10 +14,15 @@ def registerUser(request):
     jsons = json.loads(request.body)
     action = jsons.get('action', 'nokey')
     email = jsons.get('email', 'nokey')
-    lname = jsons.get('lname', 'nokey')
-    fname = jsons.get('fname', 'nokey')
+    lname = jsons.get('lname', None)  # Allow None for empty values
+    fname = jsons.get('fname', None)  # Allow None for empty values
     passw = jsons.get('passw', 'nokey')
     
+    # Check if first name and last name are provided
+    if not fname or not lname:
+        resp = sendResponse(400, "Та бүх талбарыг бөглөн үү!", action)
+        return HttpResponse(resp)
+
     con = connect()
     cursor = con.cursor()
 
@@ -24,7 +30,7 @@ def registerUser(request):
     cursor.execute(f"SELECT COUNT(*) FROM t_users WHERE email = '{email}' AND enabled = 1")
     count = cursor.fetchone()[0]
     print(count)
-    if count==1:
+    if count == 1:
         resp = sendResponse(401, f'{email} emailtei hereglegch burtgeltei bn', action)
         return HttpResponse(resp)
 
@@ -40,6 +46,7 @@ def registerUser(request):
         error_message = "Database error: " + str(e)
         resp = sendResponse(500, error_message, action)
         return HttpResponse(resp)
+
     
 @api_view(['POST', 'GET'])
 def addMovie(request):
@@ -100,3 +107,21 @@ def bookadd(request):
         error_message = "Database error: " + str(e)
         resp = sendResponse(500, error_message, action)
         return HttpResponse(resp)
+    
+
+def gettime(request):
+        today = date.today()
+        return HttpResponse(today)
+def userregister(request):
+        jsons = json.loads(request.body)
+        return HttpResponse(jsons['action'])
+
+def checkService(request):
+    jsons = json.loads(request.body)
+    if jsons['action']=='gettime':
+        result (jsons)
+    elif jsons['action']=='register': 
+        result=userregister(request)
+    else:
+        result ('action buruu bnaa')
+    return HttpResponse(result)

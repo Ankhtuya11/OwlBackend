@@ -31,3 +31,18 @@ POST --> http://127.0.0.1:8000/bookadd/
         "author":"Dorj",
         "btype":"zokhiol"
     }
+
+
+
+3. addMovie
+
+POST ---> http://127.0.0.1:8000/addmovie
+
+{
+    "action":"addMovie"
+    "mname":"Avatar"
+    "mauth":"medkuu"
+    "mtorol":"adventure"
+}
+
+
