@@ -5,6 +5,7 @@ from backendApp.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('register/', registerUser),
+    path('login/', loginUser),
     path('addmovie/', addMovie),
     path('bookadd/', bookadd),
     path('checkService/', checkService),

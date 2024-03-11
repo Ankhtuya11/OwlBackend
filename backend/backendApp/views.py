@@ -46,6 +46,31 @@ def registerUser(request):
         error_message = "Database error: " + str(e)
         resp = sendResponse(500, error_message, action)
         return HttpResponse(resp)
+    
+@api_view(['POST', 'GET'])
+def loginUser(request):
+    action = 'loginUser'
+    jsons = json.loads(request.body)
+    action = jsons.get('action', 'nokey')
+    email = jsons.get('email', 'nokey')
+    passw = jsons.get('passw', 'nokey')
+    
+    try:
+        con = connect()
+        cursor = con.cursor()
+        cursor.execute(f"SELECT COUNT(*) FROM t_users WHERE email = '{email}' AND passw = '{passw}'")
+        count = cursor.fetchone()[0]
+        if count == 0:
+            resp = sendResponse(401, f'{email} хэрэглэгч бүртгэлгүй байна.', action)
+            return HttpResponse(resp)
+        resp = sendResponse(200, f'{email} хэрэглэгч амжилттай нэвтэрлээ.', action)
+        return HttpResponse(resp)
+        
+    except Exception as e:
+        # Handle database errors
+        error_message = "Database error: " + str(e)
+        resp = sendResponse(500, error_message, action)
+        return HttpResponse(resp)
 
     
 @api_view(['POST', 'GET'])
