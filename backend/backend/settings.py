@@ -94,8 +94,8 @@ DATABASES = {
        'NAME': 'qrOwl',
        'USER': 'userowl',
        'PASSWORD': 'Owl1234@',
-    #    'HOST': '192.168.0.15',
-       'HOST': '59.153.86.254',
+       'HOST': '192.168.0.15',
+    #    'HOST': '59.153.86.254',
        'PORT': '5938',
     }
 }
@@ -159,8 +159,8 @@ def connect():
         dbname='qrOwl',
         user='userowl',
         password='Owl1234@',
-        # host='192.168.0.15',
-        host='59.153.86.254',
+        host='192.168.0.15',
+        # host='59.153.86.254',
         port='5938',
     )
     return con
