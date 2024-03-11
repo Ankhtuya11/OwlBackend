@@ -46,3 +46,14 @@ POST ---> http://127.0.0.1:8000/addmovie
 }
 
 
+
+4. loginUser
+
+POST --> http://127.0.0.1:8000/login/
+    {
+        "action":"registerUser",
+        "email":"shirednevbold@yahoo.com",
+        "passw":"asdfzxcv"
+    }
+
+
