@@ -4,8 +4,10 @@ import json
 from rest_framework.decorators import api_view
 from django.http import HttpResponse
 from datetime import date
+from rest_framework.authtoken.models import Token
 # Create your views here.
-
+import jwt
+from datetime import datetime, timedelta
 
 
 @api_view(['POST', 'GET'])
@@ -58,12 +60,19 @@ def loginUser(request):
     try:
         con = connect()
         cursor = con.cursor()
-        cursor.execute(f"SELECT COUNT(*) FROM t_users WHERE email = '{email}' AND passw = '{passw}'")
-        count = cursor.fetchone()[0]
+        cursor.execute(f"SELECT uid FROM t_users WHERE email = '{email}' AND passw = '{passw}'")
+ 
+        count = cursor.fetchall()[0][0]
+        print(count)
         if count == 0:
             resp = sendResponse(401, f'{email} хэрэглэгч бүртгэлгүй байна.', action)
             return HttpResponse(resp)
-        resp = sendResponse(200, f'{email} хэрэглэгч амжилттай нэвтэрлээ.', action)
+        token = generate_token(count)
+        print(token)
+        cursor.execute("INSERT INTO t_token (uid, token) VALUES (%s, %s)",
+                       (count,token))
+        con.commit()
+        resp = sendResponse(200, f'{token} хэрэглэгч амжилттай нэвтэрлээ.', action)
         return HttpResponse(resp)
         
     except Exception as e:
@@ -150,3 +159,24 @@ def checkService(request):
     else:
         result ('action buruu bnaa')
     return HttpResponse(result)
+
+
+
+
+
+def generate_token(count):
+    try:
+        # Define payload with user identifier (count value) and expiration time
+        payload = {
+            'user_id': count,
+            'exp': datetime.utcnow() + timedelta(days=1)  # Token expiration time (1 day)
+        }
+
+        # Encode payload and return token
+        secret_key = 'your_secret_key'
+        token = jwt.encode(payload, secret_key, algorithm='HS256')
+        return token  # No need to decode here
+    except Exception as e:
+        # Handle token generation errors
+        error_message = "Token generation error: " + str(e)
+        return None
