@@ -8,7 +8,7 @@ from rest_framework.authtoken.models import Token
 # Create your views here.
 import jwt
 from datetime import datetime, timedelta
-
+import random
 
 @api_view(['POST', 'GET'])
 def registerUser(request):
@@ -22,7 +22,7 @@ def registerUser(request):
     
     # Check if first name and last name are provided
     if not fname or not lname:
-        resp = sendResponse(400, "Та бүх талбарыг бөглөн үү!", action)
+        resp = sendResponse(400, "Та бүх талбарыг бөглөнө үү!", action)
         return HttpResponse(resp)
 
     con = connect()
@@ -35,6 +35,10 @@ def registerUser(request):
     if count == 1:
         resp = sendResponse(401, f'{email} emailtei hereglegch burtgeltei bn', action)
         return HttpResponse(resp)
+    verification_code = generate_verification_code()  # Implement your own function to generate a verification code
+
+    # Send verification code via email
+    send_verification_email(email, verification_code)
 
     # Insert new user
     try:
@@ -180,3 +184,9 @@ def generate_token(count):
         # Handle token generation errors
         error_message = "Token generation error: " + str(e)
         return None
+    
+
+
+def generate_verification_code():
+    # Generate a random 6-digit verification code
+    return ''.join(random.choices('0123456789', k=6))    

@@ -13,7 +13,9 @@ from datetime import datetime
 from pathlib import Path
 import json
 import psycopg2
-
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -162,3 +164,33 @@ def connect():
 def disconnect(con):
     con.close()
 #disconnect
+    
+
+
+def send_verification_email(email, verification_code):
+    # Setup the MIME
+    msg = MIMEMultipart()
+    msg['From'] = "pcniiacc@gmail.com"
+    msg['To'] = email
+    msg['Subject'] = "Verification Code"
+
+    # Email body
+    body = f"Your verification code is: {verification_code}"
+    msg.attach(MIMEText(body, 'plain'))
+
+    # Send the message via SMTP server
+    smtp_server = "smtp.gmail.com"
+    smtp_port = 587
+    smtp_username = "pcniiacc@gmail.com"
+    smtp_password = "omlm sujr kczy gour"
+    
+    try:
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(smtp_username, smtp_password)
+        text = msg.as_string()
+        server.sendmail("pcniiacc@gmail.com", email, text)
+        server.quit()
+        print("Email sent successfully!")
+    except Exception as e:
+        print("Error sending email:", e)
