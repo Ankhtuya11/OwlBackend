@@ -9,7 +9,7 @@ from rest_framework.authtoken.models import Token
 import jwt
 from datetime import datetime, timedelta
 import random
-
+import bcrypt
 @api_view(['POST', 'GET'])
 def registerUser(request):
     action = 'registerUser'
@@ -19,7 +19,8 @@ def registerUser(request):
     lname = jsons.get('lname', None)  # Allow None for empty values
     fname = jsons.get('fname', None)  # Allow None for empty values
     passw = jsons.get('passw', 'nokey')
-    
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(passw, salt)
     # Check if first name and last name are provided
     if not fname or not lname:
         resp = sendResponse(400, "Та бүх талбарыг бөглөнө үү!", action)
@@ -43,7 +44,7 @@ def registerUser(request):
     # Insert new user
     try:
         cursor.execute("INSERT INTO t_users (lname, fname, passw, enabled, email) VALUES (%s, %s, %s, %s, %s)",
-                       (lname, fname, passw, 1, email))
+                       (lname, fname, hashed, 1, email))
         con.commit()  # Commit the transaction
         resp = sendResponse(200, f'{email} хэрэглэгчийг амжилттай бүртгэлээ', action)
         return HttpResponse(resp)
@@ -60,11 +61,16 @@ def loginUser(request):
     action = jsons.get('action', 'nokey')
     email = jsons.get('email', 'nokey')
     passw = jsons.get('passw', 'nokey')
-    
     try:
         con = connect()
         cursor = con.cursor()
-        cursor.execute(f"SELECT uid FROM t_users WHERE email = '{email}' AND passw = '{passw}'")
+        cursor.execute(f"SELECT passw FROM t_users WHERE email = '{email}'")
+        hashed = cursor.fetchall()[0][0]
+        if bcrypt.checkpw(passw, hashed) is not True:
+            resp = sendResponse(401, f'{email} хэрэглэгчийн нууц үг буруу байна.', action)
+            return HttpResponse(resp)
+
+        cursor.execute(f"SELECT uid FROM t_users WHERE email = '{email}'")
  
         count = cursor.fetchall()[0][0]
         print(count)
