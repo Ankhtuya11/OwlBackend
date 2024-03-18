@@ -167,7 +167,7 @@ def disconnect(con):
     
 
 
-def send_verification_email(email, verification_code):
+def send_verification_email(email, verification_code,fname,lname):
     # Setup the MIME
     msg = MIMEMultipart()
     msg['From'] = "pcniiacc@gmail.com"
@@ -175,7 +175,9 @@ def send_verification_email(email, verification_code):
     msg['Subject'] = "Verification Code"
 
     # Email body
-    body = f"Your verification code is: {verification_code}"
+    body = f" <body><p style='font-family: sans-serif; font-size: 16px; line-height: 1.5; margin: 20px;'>Welcome {fname}, {lname}</p>Your verification code is: {verification_code}</body>"
+
+    
     msg.attach(MIMEText(body, 'plain'))
 
     # Send the message via SMTP server
@@ -194,3 +196,4 @@ def send_verification_email(email, verification_code):
         print("Email sent successfully!")
     except Exception as e:
         print("Error sending email:", e)
+   

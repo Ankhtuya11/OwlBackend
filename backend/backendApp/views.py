@@ -38,7 +38,7 @@ def registerUser(request):
     verification_code = generate_verification_code()  # Implement your own function to generate a verification code
 
     # Send verification code via email
-    send_verification_email(email, verification_code)
+    send_verification_email(email, verification_code,lname,fname)
 
     # Insert new user
     try:
@@ -173,7 +173,7 @@ def generate_token(count):
         # Define payload with user identifier (count value) and expiration time
         payload = {
             'user_id': count,
-            'exp': datetime.utcnow() + timedelta(days=1)  # Token expiration time (1 day)
+            'exp': datetime.now() + timedelta(days=1)  # Token expiration time (1 day)
         }
 
         # Encode payload and return token
@@ -183,6 +183,7 @@ def generate_token(count):
     except Exception as e:
         # Handle token generation errors
         error_message = "Token generation error: " + str(e)
+        print(error_message)
         return None
     
 
