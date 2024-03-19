@@ -23,7 +23,8 @@ def registerUser(request):
     hashed = bcrypt.hashpw(passw, salt)
     # Check if first name and last name are provided
     if not fname or not lname:
-        resp = sendResponse(400, "Та бүх талбарыг бөглөнө үү!", action)
+        data = [{"message":"ta buh talbariig boglono uu"}]
+        resp = sendResponse(request,400, "Та бүх талбарыг бөглөнө үү!", action)
         return HttpResponse(resp)
 
     con = connect()
@@ -32,9 +33,10 @@ def registerUser(request):
     # Check if email already exists and is enabled
     cursor.execute(f"SELECT COUNT(*) FROM t_users WHERE email = '{email}' AND enabled = 1")
     count = cursor.fetchone()[0]
-    print(count)
+    # print(count)
     if count == 1:
-        resp = sendResponse(401, f'{email} emailtei hereglegch burtgeltei bn', action)
+        data = [{"email":email}]
+        resp = sendResponse(request,1000,data,action)
         return HttpResponse(resp)
     verification_code = generate_verification_code()  # Implement your own function to generate a verification code
 
@@ -46,12 +48,13 @@ def registerUser(request):
         cursor.execute("INSERT INTO t_users (lname, fname, passw, enabled, email) VALUES (%s, %s, %s, %s, %s)",
                        (lname, fname, hashed, 1, email))
         con.commit()  # Commit the transaction
-        resp = sendResponse(200, f'{email} хэрэглэгчийг амжилттай бүртгэлээ', action)
+        data = [{'email':email, 'firstname':fname, 'lastname': lname}]
+        resp = sendResponse(request,200, data, action)
         return HttpResponse(resp)
     except Exception as e:
         # Handle database errors
         error_message = "Database error: " + str(e)
-        resp = sendResponse(500, error_message, action)
+        resp = sendResponse(request,500, error_message, action)
         return HttpResponse(resp)
     
 @api_view(['POST', 'GET'])
@@ -67,7 +70,8 @@ def loginUser(request):
         cursor.execute(f"SELECT passw FROM t_users WHERE email = '{email}'")
         hashed = cursor.fetchall()[0][0]
         if bcrypt.checkpw(passw, hashed) is not True:
-            resp = sendResponse(401, f'{email} хэрэглэгчийн нууц үг буруу байна.', action)
+            data=[{"password":passw}]
+            resp = sendResponse(request,1000,data, action)
             return HttpResponse(resp)
 
         cursor.execute(f"SELECT uid FROM t_users WHERE email = '{email}'")
@@ -75,20 +79,23 @@ def loginUser(request):
         count = cursor.fetchall()[0][0]
         print(count)
         if count == 0:
-            resp = sendResponse(401, f'{email} хэрэглэгч бүртгэлгүй байна.', action)
+            data = [{"email":email}]
+            resp = sendResponse(request,1000,data, action)
             return HttpResponse(resp)
         token = generate_token(count)
-        print(token)
+        # print(token)
         cursor.execute("INSERT INTO t_token (uid, token) VALUES (%s, %s)",
                        (count,token))
         con.commit()
-        resp = sendResponse(200, f'{token} хэрэглэгч амжилттай нэвтэрлээ.', action)
+        data = [{'email':email,"token":token}]
+
+        resp = sendResponse(request,200, data, action)
         return HttpResponse(resp)
         
     except Exception as e:
         # Handle database errors
-        error_message = "Database error: " + str(e)
-        resp = sendResponse(500, error_message, action)
+        data = [{"Database error": str(e)}]
+        resp = sendResponse(request,500, data, action)
         return HttpResponse(resp)
 
     
@@ -109,19 +116,19 @@ def addMovie(request):
         existing_movie = cursor.fetchone()
         if existing_movie:
             # Movie already exists, send a response indicating that
-            resp = sendResponse(400, f"{mname} kino ali hediin burtgegdsen bn", action)
+            resp = sendResponse(request,400, f"{mname} kino ali hediin burtgegdsen bn", action)
         else:
             # Movie doesn't exist, insert it into the database
             cursor.execute(f"""INSERT INTO t_movie(mname, mauth, mtorol) 
                                 VALUES('{mname}', '{mauth}', '{mtorol}')""")
             con.commit()
-            resp = sendResponse(200, f"{mname} kino amjilttai burtgegdlee", action)
+            resp = sendResponse(request,200, f"{mname} kino amjilttai burtgegdlee", action)
         
         return HttpResponse(resp)
     except Exception as e:
         # Handle database errors
         error_message = "Database error: " + str(e)
-        resp = sendResponse(500, error_message, action)
+        resp = sendResponse(request,500, error_message, action)
         return HttpResponse(resp)
 
 @api_view(['POST', 'GET'])
@@ -139,17 +146,17 @@ def bookadd(request):
         cursor.execute(f"SELECT * FROM t_book WHERE bname = '{bname}' AND author = '{author}' AND btype = '{btype}'")
         existing_bookadd = cursor.fetchone()
         if existing_bookadd:
-            resp = sendResponse(400, f"{bname} ном бүртгэгдсэн байна", action)
+            resp = sendResponse(request,400, f"{bname} ном бүртгэгдсэн байна", action)
         else:
             cursor.execute(f"""INSERT INTO t_book(bname, author, btype) VALUES('{bname}', '{author}', '{btype}')""")
             con.commit()
-            resp= sendResponse(200, f"{bname} номыг бүртгэлээ", action)
+            resp= sendResponse(request,200, f"{bname} номыг бүртгэлээ", action)
 
         return HttpResponse(resp)
     except Exception as e:
         # Handle database errors
         error_message = "Database error: " + str(e)
-        resp = sendResponse(500, error_message, action)
+        resp = sendResponse(request,500, error_message, action)
         return HttpResponse(resp)
     
 

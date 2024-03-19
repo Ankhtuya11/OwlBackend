@@ -138,16 +138,15 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-def sendResponse(resultCode, resultMessage, action):
+def sendResponse(request,resultCode,data, action):
     resp = {}
     resp["resultCode"] = resultCode
-    resp["resultMessage"] = resultMessage
-    # resp["data"] = data
-    # resp["size"] = len(data)
+    resp["resultMessage"] = resultMessages[resultCode]
+    resp["data"] = data
+    resp["size"] = len(data)
     resp["action"] = action
-    now = datetime.now()
-    resp["regdate"] = now.strftime("%Y/%m/%d %H:%M:%S")
-    return json.dumps(resp)
+    resp["curdate"] = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+    return json.dumps(resp,indent=4, sort_keys=True, default=str)
 
 #dbconnection
 def connect():
@@ -197,3 +196,14 @@ def send_verification_email(email, verification_code,fname,lname):
     except Exception as e:
         print("Error sending email:", e)
    
+
+resultMessages = {
+    200:"Success",
+    404:"Not found",
+    1000 : "Burtgeh bolomjgui. Mail hayag umnu burtgeltei baina",
+    1001 : "Hereglegch Amjilttai burtgegdlee. Batalgaajuulah mail ilgeegdlee. 24 tsagiin dotor batalgaajuulna.",
+    1002 : "Batalgaajuulah mail ilgeelee",
+    3001 : "ACTION BURUU",
+    3002 : "METHOD BURUU",
+    3003 : "JSON BURUU",
+}   
