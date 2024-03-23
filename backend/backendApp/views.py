@@ -76,18 +76,18 @@ def loginUser(request):
 
         cursor.execute(f"SELECT uid FROM t_users WHERE email = '{email}'")
  
-        count = cursor.fetchall()[0][0]
-        print(count)
-        if count == 0:
+        user_id = cursor.fetchall()[0][0]
+        print(user_id)
+        if user_id == 0:
             data = [{"email":email}]
             resp = sendResponse(request,1000,data, action)
             return HttpResponse(resp)
-        token = generate_token(count)
+        token = generate_token(user_id)
         # print(token)
         cursor.execute("INSERT INTO t_token (uid, token) VALUES (%s, %s)",
-                       (count,token))
+                       (user_id,token))
         con.commit()
-        data = [{'email':email,"token":token}]
+        data = [{'uid':user_id,'email':email,"token":token}]
 
         resp = sendResponse(request,200, data, action)
         return HttpResponse(resp)
