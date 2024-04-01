@@ -174,10 +174,10 @@ def send_verification_email(email, verification_code,fname,lname):
     msg['Subject'] = "Verification Code"
 
     # Email body
-    body = f" <body><p style='font-family: sans-serif; font-size: 16px; line-height: 1.5; margin: 20px;'>Welcome {fname}, {lname}</p>Your verification code is: {verification_code}</body>"
+    body = f" <body><p style='font-family: sans-serif; font-size: 16px; line-height: 1.5; margin: 20px;'>Welcome {fname}, {lname}</p>Your verification code is: <a href='localhost:8000/checktoken/?token={verification_code}'>{verification_code}</body>"
 
     
-    msg.attach(MIMEText(body, 'plain'))
+    msg.attach(MIMEText(body, 'html'))
 
     # Send the message via SMTP server
     smtp_server = "smtp.gmail.com"
