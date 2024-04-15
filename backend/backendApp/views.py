@@ -19,8 +19,6 @@ def registerUser(request):
     lname = jsons.get('lname', None)  # Allow None for empty values
     fname = jsons.get('fname', None)  # Allow None for empty values
     passw = jsons.get('passw', 'nokey')
-    salt = bcrypt.gensalt()
-    hashed = bcrypt.hashpw(passw, salt)
     # Check if first name and last name are provided
     if not fname or not lname:
         data = [{"message":"ta buh talbariig boglono uu"}]
@@ -46,7 +44,7 @@ def registerUser(request):
     # Insert new user
     try:
         cursor.execute("INSERT INTO t_users (lname, fname, passw, enabled, email) VALUES (%s, %s, %s, %s, %s)",
-                       (lname, fname, hashed, 1, email))
+                       (lname, fname, passw, 1, email))
         con.commit()  # Commit the transaction
         data = [{'email':email, 'firstname':fname, 'lastname': lname}]
         resp = sendResponse(request,200, data, action)
@@ -69,7 +67,7 @@ def loginUser(request):
         cursor = con.cursor()
         cursor.execute(f"SELECT passw FROM t_users WHERE email = '{email}'")
         hashed = cursor.fetchall()[0][0]
-        if bcrypt.checkpw(passw, hashed) is not True:
+        if hashed != passw:
             data=[{"password":passw}]
             resp = sendResponse(request,1000,data, action)
             return HttpResponse(resp)
