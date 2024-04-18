@@ -9,7 +9,7 @@ from rest_framework.authtoken.models import Token
 import jwt
 from datetime import datetime, timedelta
 import random
-import bcrypt
+import hashlib
 @api_view(['POST', 'GET'])
 def registerUser(request):
     action = 'registerUser'
@@ -61,13 +61,15 @@ def loginUser(request):
     jsons = json.loads(request.body)
     action = jsons.get('action', 'nokey')
     email = jsons.get('email', 'nokey')
-    passw = jsons.get('passw', 'nokey')
+    passw1 = jsons.get('passw', 'nokey')
+    passw = hashlib.md5(hashlib.md5(passw1.encode('utf-8')).hexdigest().encode('utf-8')).hexdigest()
     try:
         con = connect()
         cursor = con.cursor()
         cursor.execute(f"SELECT passw FROM t_users WHERE email = '{email}'")
-        hashed = cursor.fetchall()[0][0]
-        if hashed != passw:
+        dbpassw = cursor.fetchall()[0][0]
+        
+        if dbpassw != passw:
             data=[{"password":passw}]
             resp = sendResponse(request,1000,data, action)
             return HttpResponse(resp)
@@ -81,7 +83,7 @@ def loginUser(request):
             resp = sendResponse(request,1000,data, action)
             return HttpResponse(resp)
         token = generate_token(user_id)
-        # print(token)
+       
         cursor.execute("INSERT INTO t_token (uid, token) VALUES (%s, %s)",
                        (user_id,token))
         con.commit()
@@ -123,7 +125,7 @@ def addMovie(request):
             resp = sendResponse(request,200, f"{mname} kino amjilttai burtgegdlee", action)
         
         return HttpResponse(resp)
-    except Exception as e:
+    except Exception as e:  
         # Handle database errors
         error_message = "Database error: " + str(e)
         resp = sendResponse(request,500, error_message, action)
