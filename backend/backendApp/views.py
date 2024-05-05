@@ -4,12 +4,15 @@ import json
 from rest_framework.decorators import api_view
 from django.http import HttpResponse
 from datetime import date
-from rest_framework.authtoken.models import Token
-# Create your views here.
 import jwt
 from datetime import datetime, timedelta
 import random
 import hashlib
+import io
+import pytesseract
+from PIL import Image
+import base64
+from io import BytesIO
 @api_view(['POST', 'GET'])
 def registerUser(request):
     action = 'registerUser'
@@ -63,6 +66,7 @@ def loginUser(request):
     email = jsons.get('email', 'nokey')
     passw1 = jsons.get('passw', 'nokey')
     passw = hashlib.md5(hashlib.md5(passw1.encode('utf-8')).hexdigest().encode('utf-8')).hexdigest()
+    print(passw+"==AAA=="+passw1)
     try:
         con = connect()
         cursor = con.cursor()
@@ -71,7 +75,7 @@ def loginUser(request):
         
         if dbpassw != passw:
             data=[{"password":passw}]
-            resp = sendResponse(request,1000,data, action)
+            resp = sendResponse(request,1004,data, action)
             return HttpResponse(resp)
 
         cursor.execute(f"SELECT uid FROM t_users WHERE email = '{email}'")
@@ -177,7 +181,21 @@ def checkService(request):
         result ('action buruu bnaa')
     return HttpResponse(result)
 
+@api_view(['POST', 'GET'])
+def b64Text(request):
+    action = 'base64ToText'
+    jsons = json.loads(request.body)
+    action = jsons.get('action', 'nokey')
+    b64 = jsons.get('base64', 'nokey')
+    image_data = base64.b64decode(b64)
+    image = Image.open(io.BytesIO(image_data))
+    extracted_text = pytesseract.image_to_string(image)
+    data = [{"text":extracted_text}]
+    print(data)
+    resp = sendResponse(request,200, data, action)
+    return HttpResponse(resp)
 
+  
 
 
 

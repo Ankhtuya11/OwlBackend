@@ -154,8 +154,8 @@ def connect():
         dbname='qrOwl',
         user='userowl',
         password='Owl1234@',
-        host='192.168.0.15',
-        # host='59.153.86.254',
+        # host='192.168.0.15',
+        host='59.153.86.254',
         port='5938',
     )
     return con

@@ -9,4 +9,5 @@ urlpatterns = [
     path('addmovie/', addMovie),
     path('bookadd/', bookadd),
     path('checkService/', checkService),
+    path('b64ToText/', b64Text),
 ]
