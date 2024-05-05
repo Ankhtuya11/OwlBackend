@@ -19,7 +19,7 @@ def registerUser(request):
     lname = jsons.get('lname', None)  # Allow None for empty values
     fname = jsons.get('fname', None)  # Allow None for empty values
     passw = jsons.get('passw', 'nokey')
-    # Check if first name and last name are provided
+    # Check if first name and last name are provided    
     if not fname or not lname:
         data = [{"message":"ta buh talbariig boglono uu"}]
         resp = sendResponse(request,400, "Та бүх талбарыг бөглөнө үү!", action)

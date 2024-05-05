@@ -202,8 +202,11 @@ resultMessages = {
     404:"Not found",
     1000 : "Burtgeh bolomjgui. Mail hayag umnu burtgeltei baina",
     1001 : "Hereglegch Amjilttai burtgegdlee. Batalgaajuulah mail ilgeegdlee. 24 tsagiin dotor batalgaajuulna.",
-    1002 : "Batalgaajuulah mail ilgeelee",
+    1002 : "Login Successful",
+    1003 : "Amjilttai batalgaajlaa",
+    1004 : "Hereglegchiin ner, nuuts ug buruu baina.",
     3001 : "ACTION BURUU",
     3002 : "METHOD BURUU",
     3003 : "JSON BURUU",
-}   
+    3004 : "Token-ii hugatsaa duussan. Idevhgui token baina.",
+}
